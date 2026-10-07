@@ -279,6 +279,13 @@ for the cURL transport.
 The package is registered on Packagist once. After that a new version appears there when a version
 tag such as `v0.1.0` is pushed to the repository.
 
+## Releasing
+
+Set the version in `src/Client.php`, add a `## x.y.z` section to `CHANGELOG.md`, commit, then push a tag
+`vx.y.z`. The `Publish` workflow checks that the tag equals the package version, runs the checks,
+tells Packagist about the version and creates the GitHub release from the changelog section. A tag that does not match the
+version publishes nothing.
+
 ## License
 
 MIT. See [LICENSE](LICENSE).

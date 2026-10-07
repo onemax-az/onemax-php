@@ -1,0 +1,61 @@
+name: Publish
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: curl, json
+          coverage: none
+      - run: composer install --no-interaction --no-progress
+      - name: Check the tag matches the package version
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          declared="$(php -r 'require "vendor/autoload.php"; echo OneMax\Client::VERSION;')"
+          echo "tag $tag, Client::VERSION $declared"
+          test "$tag" = "$declared"
+          test "$(php -r 'echo array_key_exists("version", json_decode(file_get_contents("composer.json"), true)) ? "set" : "unset";')" = "unset"
+      - run: composer validate --strict
+      - run: composer analyse
+      - run: composer test
+
+  release:
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+      - name: Take the notes from the changelog
+        run: |
+          awk -v version="${GITHUB_REF_NAME#v}" '
+            /^## / { found = ($2 == version); next }
+            found { print }
+          ' CHANGELOG.md > notes.md
+          test -s notes.md
+      - name: Publish the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes-file notes.md
+
+  publish:
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Tell Packagist about the version
+        env:
+          PACKAGIST_USERNAME: ${{ secrets.PACKAGIST_USERNAME }}
+          PACKAGIST_TOKEN: ${{ secrets.PACKAGIST_TOKEN }}
+        run: |
+          if [ -z "$PACKAGIST_TOKEN" ]; then
+            echo "No Packagist token set. Packagist picks the tag up through its GitHub hook."
+            exit 0
+          fi
+          curl -fsS -X POST             -H "Content-Type: application/json"             "https://packagist.org/api/update-package?username=${PACKAGIST_USERNAME}&apiToken=${PACKAGIST_TOKEN}"             -d '{"repository":{"url":"https://github.com/onemax-az/onemax-php"}}'
