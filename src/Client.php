@@ -14,18 +14,21 @@ use OneMax\Internal\Json;
 use OneMax\Result\Context;
 use OneMax\Result\LinkStatus;
 use OneMax\Result\LinkToken;
+use OneMax\Result\Mode;
 use OneMax\Result\Usage;
 use OneMax\Result\Verification;
 
 final class Client
 {
-    public const VERSION = '0.1.0';
+    public const VERSION = '0.2.0';
 
     public const DEFAULT_BASE_URL = 'https://api.onemax.az/v1';
 
     public const DEFAULT_SITE_URL = 'https://onemax.az';
 
     private const USER_AGENT = 'onemax-php/' . self::VERSION;
+
+    private const TEST_KEY_PREFIX = 'omx_test_';
 
     private const LOCALE_PREFIXES = ['az' => '', 'ru' => '/ru', 'en' => '/en'];
 
@@ -48,6 +51,11 @@ final class Client
         $this->baseUrl = rtrim($baseUrl, '/');
         $this->siteUrl = rtrim($siteUrl, '/');
         $this->transport = $transport ?? new CurlTransport();
+    }
+
+    public function mode(): Mode
+    {
+        return new Mode(str_starts_with(trim($this->apiKey), self::TEST_KEY_PREFIX) ? Mode::TEST : Mode::LIVE);
     }
 
     public function context(): Context

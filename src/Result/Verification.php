@@ -12,6 +12,7 @@ final class Verification
         public readonly Reason $reason,
         public readonly ?string $usageId,
         public readonly int $dailyLimit,
+        public readonly ?Mode $mode = null,
     ) {
     }
 }

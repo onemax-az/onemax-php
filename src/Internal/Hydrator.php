@@ -8,6 +8,7 @@ use OneMax\Exception\TransportException;
 use OneMax\Result\Context;
 use OneMax\Result\LinkStatus;
 use OneMax\Result\LinkToken;
+use OneMax\Result\Mode;
 use OneMax\Result\Offer;
 use OneMax\Result\Reason;
 use OneMax\Result\Usage;
@@ -41,6 +42,7 @@ final class Hydrator
             self::string($data, 'venue_name'),
             self::int($data, 'daily_limit'),
             $offers,
+            self::mode($data),
         );
     }
 
@@ -52,6 +54,7 @@ final class Hydrator
             new Reason(self::string($data, 'reason')),
             self::nullableString($data, 'usage_id'),
             self::int($data, 'daily_limit'),
+            self::mode($data),
         );
     }
 
@@ -69,17 +72,25 @@ final class Hydrator
             $createdAt,
             self::nullableDateTime($data, 'confirmed_at'),
             self::nullableDateTime($data, 'voided_at'),
+            self::mode($data),
         );
     }
 
     public static function linkToken(array $data): LinkToken
     {
-        return new LinkToken(self::string($data, 'link_token'), self::bool($data, 'active'));
+        return new LinkToken(self::string($data, 'link_token'), self::bool($data, 'active'), self::mode($data));
     }
 
     public static function linkStatus(array $data): LinkStatus
     {
-        return new LinkStatus(self::bool($data, 'linked'), self::bool($data, 'active'));
+        return new LinkStatus(self::bool($data, 'linked'), self::bool($data, 'active'), self::mode($data));
+    }
+
+    private static function mode(array $data): ?Mode
+    {
+        $value = self::nullableString($data, 'mode');
+
+        return $value === null ? null : new Mode($value);
     }
 
     private static function string(array $data, string $key): string

@@ -382,7 +382,7 @@ final class ClientTest extends TestCase
         $expectedHeaders = [
             'Authorization' => 'Bearer ' . Fixtures::API_KEY,
             'Accept' => 'application/json',
-            'User-Agent' => 'onemax-php/0.1.0',
+            'User-Agent' => 'onemax-php/0.2.0',
         ];
         if ($body !== null) {
             $expectedHeaders['Content-Type'] = 'application/json';
