@@ -62,7 +62,7 @@ final class CurlTransportTest extends TestCase
         self::assertStringStartsWith("GET /v1/integration/context\n", $response->body);
         self::assertStringContainsString("\nauthorization: Bearer " . Fixtures::API_KEY . "\n", $response->body);
         self::assertStringContainsString("\naccept: application/json\n", $response->body);
-        self::assertStringContainsString("\nuser-agent: onemax-php/0.1.0\n", $response->body);
+        self::assertStringContainsString("\nuser-agent: onemax-php/0.2.0\n", $response->body);
         self::assertStringNotContainsString('content-type', $response->body);
         self::assertStringEndsWith("\nbody: ", $response->body);
     }
@@ -110,7 +110,7 @@ final class CurlTransportTest extends TestCase
             'GET',
             'http://127.0.0.1:' . self::freePort() . '/v1/integration/context',
             Fixtures::API_KEY,
-            'onemax-php/0.1.0',
+            'onemax-php/0.2.0',
             null,
             2.0,
         );
@@ -122,7 +122,7 @@ final class CurlTransportTest extends TestCase
 
     public function testATimeoutRaisesATransportException(): void
     {
-        $request = new Request('GET', self::base() . '/slow', Fixtures::API_KEY, 'onemax-php/0.1.0', null, 0.3);
+        $request = new Request('GET', self::base() . '/slow', Fixtures::API_KEY, 'onemax-php/0.2.0', null, 0.3);
         $started = microtime(true);
 
         try {
@@ -136,7 +136,7 @@ final class CurlTransportTest extends TestCase
 
     private static function request(string $method, string $path, ?string $body): Request
     {
-        return new Request($method, self::base() . $path, Fixtures::API_KEY, 'onemax-php/0.1.0', $body, 5.0);
+        return new Request($method, self::base() . $path, Fixtures::API_KEY, 'onemax-php/0.2.0', $body, 5.0);
     }
 
     private static function base(): string

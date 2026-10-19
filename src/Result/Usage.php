@@ -13,6 +13,7 @@ final class Usage
         public readonly \DateTimeImmutable $createdAt,
         public readonly ?\DateTimeImmutable $confirmedAt,
         public readonly ?\DateTimeImmutable $voidedAt,
+        public readonly ?Mode $mode = null,
     ) {
     }
 }

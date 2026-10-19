@@ -9,6 +9,7 @@ final class LinkToken
     public function __construct(
         public readonly string $linkToken,
         public readonly bool $active,
+        public readonly ?Mode $mode = null,
     ) {
     }
 }

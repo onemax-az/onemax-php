@@ -12,6 +12,7 @@ final class Context
         public readonly string $venueName,
         public readonly int $dailyLimit,
         public readonly array $offers,
+        public readonly ?Mode $mode = null,
     ) {
     }
 }
